@@ -3,9 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration System</title>
+    <title>EventHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .neon-border { border-left: 4px solid #3b82f6; }
+        .btn-gradient { background: linear-gradient(90deg, #3b82f6, #8b5cf6); }
+    </style>
 </head>
-<body>
-    
+<body class="p-6">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-12">
+            <h1 class="text-3xl font-black tracking-tighter text-white">EVENT<span class="text-blue-500">HUB</span></h1>
+            <div class="flex gap-4">
+                <input id="userEmail" type="email" placeholder="Your Email" class="bg-gray-900 border border-gray-800 p-2 rounded-lg text-sm outline-none focus:border-blue-500">
+                <button onclick="viewMyEvents()" class="text-sm font-bold text-blue-400 hover:underline">My Bookings</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-blue-500 rounded-full"></span> Explore Events
+                </h2>
+                <div id="eventGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    </div>
+            </div>
+
+            <div class="lg:col-span-4">
+                <div id="registrationArea" class="hidden sticky top-6">
+                    <div class="glass-card p-6 rounded-3xl border-t-4 border-blue-500">
+                        <h3 id="selectedEventTitle" class="text-xl font-bold mb-2">Select an Event</h3>
+                        <p class="text-gray-400 text-sm mb-6">Enter your details to secure your spot.</p>
+                        <input id="regName" type="text" placeholder="Full Name" class="w-full bg-black/40 p-4 rounded-xl mb-4 outline-none border border-white/5">
+                        <button onclick="submitRegistration()" class="btn-gradient w-full py-4 rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:scale-105 transition-transform">Confirm Registration</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://localhost:5000/api";
+        let selectedEventId = null;
+
+        async function loadEvents() {
+            const res = await fetch(`${API}/events`);
+            const events = await res.json();
+            const grid = document.getElementById('eventGrid');
+            grid.innerHTML = events.map(ev => `
+                <div class="glass-card p-6 rounded-2xl hover:bg-white/5 transition-all group">
+                    <span class="text-[10px] uppercase tracking-widest text-blue-400 font-bold">${ev.category || 'Workshop'}</span>
+                    <h3 class="text-lg font-bold mt-1 text-white">${ev.title}</h3>
+                    <p class="text-gray-400 text-xs mt-2">${ev.description}</p>
+                    <div class="mt-6 flex justify-between items-center">
+                        <span class="text-xs text-gray-500 font-mono">${ev.date}</span>
+                        <button onclick="openRegistration('${ev._id}', '${ev.title}')" class="text-xs font-bold bg-white/10 px-4 py-2 rounded-lg group-hover:bg-blue-600 transition-colors">Join Now</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openRegistration(id, title) {
+            selectedEventId = id;
+            document.getElementById('selectedEventTitle').innerText = title;
+            document.getElementById('registrationArea').classList.remove('hidden');
+        }
+
+        async function submitRegistration() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('userEmail').value;
+
+            if (!email || !name) return Swal.fire('Error', 'Email and Name required', 'error');
+
+            const res = await fetch(`${API}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ eventId: selectedEventId, userName: name, userEmail: email })
+            });
+
+            if (res.ok) {
+                Swal.fire('Success!', 'See you at the event!', 'success');
+                document.getElementById('registrationArea').classList.add('hidden');
+            }
+        }
+
+        async function viewMyEvents() {
+            const email = document.getElementById('userEmail').value;
+            if (!email) return Swal.fire('Check', 'Enter your email first', 'info');
+
+            const res = await fetch(`${API}/my-registrations/${email}`);
+            const data = await res.json();
+            
+            Swal.fire({
+                title: 'My Schedule',
+                html: data.map(r => `<div class="text-left p-2 border-b border-gray-700">${r.eventId.title} <button onclick="cancelReg('${r._id}')" class="text-red-500 text-xs ml-2">Cancel</button></div>`).join('') || 'No registrations found.'
+            });
+        }
+
+        loadEvents();
+    </script>
 </body>
 </html>
