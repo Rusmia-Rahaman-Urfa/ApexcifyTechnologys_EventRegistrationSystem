@@ -32,5 +32,13 @@ app.get('/api/events', async (req, res) => {
     const events = await Event.find();
     res.json(events);
 });
+// POST: Register a user for an event
+app.post('/api/register', async (req, res) => {
+    try {
+        const newReg = new Registration(req.body);
+        await newReg.save();
+        res.json({ message: "Registration successful!", data: newReg });
+    } catch (err) { res.status(500).json(err); }
+});
 
 app.listen(5000, () => console.log("Server running on port 5000"));
