@@ -40,5 +40,16 @@ app.post('/api/register', async (req, res) => {
         res.json({ message: "Registration successful!", data: newReg });
     } catch (err) { res.status(500).json(err); }
 });
+// GET: View specific user's registrations
+app.get('/api/my-registrations/:email', async (req, res) => {
+    const regs = await Registration.find({ userEmail: req.params.email }).populate('eventId');
+    res.json(regs);
+});
+
+// DELETE: Cancel registration
+app.delete('/api/cancel/:id', async (req, res) => {
+    await Registration.findByIdAndDelete(req.params.id);
+    res.json({ message: "Registration cancelled." });
+});
 
 app.listen(5000, () => console.log("Server running on port 5000"));
