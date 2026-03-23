@@ -52,4 +52,35 @@ app.delete('/api/cancel/:id', async (req, res) => {
     res.json({ message: "Registration cancelled." });
 });
 
+// Seed Route
+app.get('/api/seed', async (req, res) => {
+    try {
+        await Event.deleteMany({});
+        const sampleEvents = [
+            { 
+                title: "Advanced Backend Architecture", 
+                date: new Date('2026-05-15'), 
+                description: "Mastering Node.js and MongoDB performance for industrial scale.", 
+                category: "Executive Seminar" 
+            },
+            { 
+                title: "MERN Stack Masterclass", 
+                date: new Date('2026-06-01'), 
+                description: "The complete roadmap from frontend React to backend deployment.", 
+                category: "Technical Workshop" 
+            },
+            { 
+                title: "Innovation & Hult Prize", 
+                date: new Date('2026-04-10'), 
+                description: "Social entrepreneurship strategies for BAIUST innovators.", 
+                category: "Conference" 
+            }
+        ];
+        await Event.insertMany(sampleEvents);
+        res.send("<h1>Success!</h1><p>Premium events have been added to your database.</p>");
+    } catch (err) {
+        res.status(500).send("Seeding failed: " + err.message);
+    }
+});
+
 app.listen(5000, () => console.log("Server running on port 5000"));
