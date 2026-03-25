@@ -4,83 +4,71 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("🚀 Task 2: Cloud Database Connected"))
-    .catch(err => console.log(err));
+// Connect using your .env variable - Exactly like Task-1
+const mongoURI = process.env.MONGO_URI; 
 
-// MODELS
+mongoose.connect(mongoURI)
+    .then(() => console.log("🚀 Task-2: Cloud MongoDB Connected!"))
+    .catch(err => console.error("❌ Connection Error:", err));
+
+// --- MODELS ---
+
+// Event Model (Matches your Atlas 'events' collection)
 const Event = mongoose.model('Event', new mongoose.Schema({
     title: String,
-    date: String,
+    date: Date, 
     description: String,
-    category: String // Added for better UI filtering
-}));
+    category: String 
+}), 'events'); 
 
+// Registration Model (Matches your Atlas 'registrations' collection)
 const Registration = mongoose.model('Registration', new mongoose.Schema({
     eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
     userName: String,
-    userEmail: String,
-    status: { type: String, default: 'Confirmed' }
-}));
+    userEmail: String
+}), 'registrations');
 
-// API Endpoints
-// Get All Events
+// --- API ENDPOINTS ---
+
+// 1. Get all events
 app.get('/api/events', async (req, res) => {
-    const events = await Event.find();
-    res.json(events);
+    try {
+        const events = await Event.find().sort({ date: 1 });
+        res.json(events);
+    } catch (err) { res.status(500).send(err); }
 });
-// POST: Register a user for an event
+
+// 2. Register for an event
 app.post('/api/register', async (req, res) => {
     try {
         const newReg = new Registration(req.body);
         await newReg.save();
-        res.json({ message: "Registration successful!", data: newReg });
-    } catch (err) { res.status(500).json(err); }
+        res.json({ message: "Registration successful!" });
+    } catch (err) { res.status(500).send(err); }
 });
-// GET: View specific user's registrations
+
+// 3. Get my registrations by email
 app.get('/api/my-registrations/:email', async (req, res) => {
-    const regs = await Registration.find({ userEmail: req.params.email }).populate('eventId');
-    res.json(regs);
+    try {
+        const regs = await Registration.find({ userEmail: req.params.email }).populate('eventId');
+        res.json(regs);
+    } catch (err) { res.status(500).send(err); }
 });
 
-// DELETE: Cancel registration
-app.delete('/api/cancel/:id', async (req, res) => {
-    await Registration.findByIdAndDelete(req.params.id);
-    res.json({ message: "Registration cancelled." });
-});
-
-// Seed Route
+// 4. Seed Route (To add data to your new database easily)
 app.get('/api/seed', async (req, res) => {
     try {
-        await Event.deleteMany({});
-        const sampleEvents = [
-            { 
-                title: "Advanced Backend Architecture", 
-                date: new Date('2026-05-15'), 
-                description: "Mastering Node.js and MongoDB performance for industrial scale.", 
-                category: "Executive Seminar" 
-            },
-            { 
-                title: "MERN Stack Masterclass", 
-                date: new Date('2026-06-01'), 
-                description: "The complete roadmap from frontend React to backend deployment.", 
-                category: "Technical Workshop" 
-            },
-            { 
-                title: "Innovation & Hult Prize", 
-                date: new Date('2026-04-10'), 
-                description: "Social entrepreneurship strategies for BAIUST innovators.", 
-                category: "Conference" 
-            }
+        const sample = [
+            { title: "MERN Masterclass", date: new Date('2026-05-10'), description: "Learn full-stack.", category: "Workshop" },
+            { title: "AI Seminar", date: new Date('2026-06-15'), description: "Future of GPT.", category: "Seminar" }
         ];
-        await Event.insertMany(sampleEvents);
-        res.send("<h1>Success!</h1><p>Premium events have been added to your database.</p>");
-    } catch (err) {
-        res.status(500).send("Seeding failed: " + err.message);
-    }
+        await Event.insertMany(sample);
+        res.send("Data added successfully!");
+    } catch (err) { res.status(500).send(err.message); }
 });
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Task-2 Backend running on port ${PORT}`));
