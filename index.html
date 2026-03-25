@@ -3,57 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EventHub | Pro</title>
+    <title>EventHub | Premium Management</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { background: #080a0f; color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .hero-text { background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .upcoming { background: #10b981; box-shadow: 0 0 10px #10b981; }
+        :root {
+            --emerald-dark: #062c26;
+            --emerald-light: #0a4d44;
+            --gold: #d4af37;
+        }
+        body { 
+            background-color: var(--emerald-dark); 
+            color: #f8fafc; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+        }
+        .navbar-custom {
+            background: rgba(10, 77, 68, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .luxury-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .luxury-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.07);
+        }
+        .gold-text { color: var(--gold); }
+        .btn-gold {
+            background: var(--gold);
+            color: var(--emerald-dark);
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background: #f1c40f;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+        .heading-font { font-family: 'Playfair Display', serif; }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--emerald-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-6xl mx-auto">
-        <nav class="flex justify-between items-center mb-16">
-            <h1 class="text-2xl font-extrabold tracking-tighter text-white">EVENT<span class="text-blue-500">PRO</span></h1>
-            <div class="flex items-center gap-6">
-                <div class="text-[10px] font-mono uppercase text-gray-500 flex items-center">
-                    <span class="status-dot upcoming"></span> DB Connected
-                </div>
-                <button onclick="viewMyEvents()" class="bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full text-sm font-bold hover:bg-blue-600 hover:text-white transition-all">My Schedule</button>
-            </div>
-        </nav>
+<body class="pb-12">
 
-        <header class="mb-20 text-center">
-            <h2 class="text-5xl md:text-7xl font-black mb-6 hero-text">Unlock New Skills.</h2>
-            <p class="text-gray-400 max-w-xl mx-auto text-lg mb-8">Join world-class seminars and workshops designed for the next generation of engineers.</p>
-            <div class="flex max-w-md mx-auto glass p-1 rounded-2xl">
-                <input id="userEmail" type="email" placeholder="Enter email to track bookings..." class="bg-transparent w-full p-4 outline-none text-sm">
+    <nav class="navbar-custom sticky top-0 z-50 px-6 py-4 mb-12">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-[#d4af37] rounded-lg flex items-center justify-center font-bold text-emerald-900 shadow-lg">E</div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Event<span class="gold-text">Hub</span></h1>
             </div>
-        </header>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href="#" onclick="location.reload()" class="hover:text-[#d4af37] transition-colors">Discover</a>
+                <button onclick="viewMyEvents()" class="border border-[#d4af37] gold-text px-5 py-2 rounded-full hover:bg-[#d4af37] hover:text-emerald-900 transition-all font-bold">
+                    My Bookings
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-20">
+            <span class="gold-text uppercase tracking-[0.3em] text-[10px] font-bold">Premium Experience</span>
+            <h2 class="heading-font text-5xl md:text-7xl mt-4 mb-6">Elevate Your Knowledge.</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">Join world-class seminars and workshops designed for the next generation of engineers.</p>
+            <div class="mt-10 flex flex-col md:flex-row gap-4 justify-center">
+                <input id="userEmail" type="email" placeholder="Enter your corporate email" 
+                    class="bg-white/5 border border-white/10 rounded-xl px-6 py-4 w-full md:w-80 outline-none focus:border-[#d4af37] text-white">
+            </div>
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div class="lg:col-span-8">
-                <div class="flex justify-between items-end mb-8">
-                    <h3 class="text-2xl font-bold">Featured Events</h3>
-                    <p id="eventCount" class="text-gray-500 text-sm">Loading...</p>
-                </div>
-                <div id="eventGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h3 class="heading-font text-3xl mb-8 flex items-center gap-4">
+                    Upcoming Gatherings <span class="h-[1px] flex-grow bg-white/10"></span>
+                </h3>
+                <div id="eventGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     </div>
             </div>
 
             <div class="lg:col-span-4">
-                <div id="registrationArea" class="hidden sticky top-8">
-                    <div class="glass p-8 rounded-3xl border-t-2 border-blue-500 shadow-2xl">
-                        <span class="text-blue-500 font-bold text-xs uppercase tracking-widest">Registration</span>
-                        <h3 id="selectedEventTitle" class="text-2xl font-bold mt-2 mb-6">Event Name</h3>
+                <div id="registrationArea" class="hidden sticky top-32">
+                    <div class="bg-[#0a4d44] p-8 rounded-[2rem] border border-[#d4af37]/30 shadow-2xl">
+                        <h4 class="gold-text font-bold text-xs uppercase mb-2">Secure Entry</h4>
+                        <h3 id="selectedEventTitle" class="text-2xl font-bold mb-6 heading-font">Event Name</h3>
                         <div class="space-y-4">
-                            <input id="regName" type="text" placeholder="Full Name" class="w-full bg-white/5 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500 transition-all">
-                            <button onclick="submitRegistration()" class="w-full bg-blue-600 p-4 rounded-xl font-bold hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition-all">Confirm Spot</button>
-                            <button onclick="closeReg()" class="w-full text-gray-500 text-xs">Cancel</button>
+                            <input id="regName" type="text" placeholder="Full Name" 
+                                class="w-full bg-emerald-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-[#d4af37] text-white">
+                            <button onclick="submitRegistration()" class="btn-gold w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs">
+                                Confirm Attendance
+                            </button>
+                            <button onclick="document.getElementById('registrationArea').classList.add('hidden')" class="w-full text-gray-500 text-[10px] uppercase font-bold mt-2 hover:text-white transition-colors">Close Panel</button>
                         </div>
                     </div>
                 </div>
@@ -62,31 +110,36 @@
     </div>
 
     <script>
-        const API = "http://localhost:5000/api";
+        const API = "http://localhost:5000/api"; 
         let selectedEventId = null;
 
         async function loadEvents() {
+            const grid = document.getElementById('eventGrid');
             try {
+                grid.innerHTML = '<p class="text-gray-500">Curating luxury events...</p>';
                 const res = await fetch(`${API}/events`);
                 const events = await res.json();
-                const grid = document.getElementById('eventGrid');
-                document.getElementById('eventCount').innerText = `${events.length} available`;
                 
+                if (events.length === 0) {
+                    grid.innerHTML = '<p class="text-gray-500">No events found. Visit /api/seed to add some!</p>';
+                    return;
+                }
+
                 grid.innerHTML = events.map(ev => `
-                    <div class="glass p-6 rounded-3xl hover:border-blue-500/50 transition-all cursor-pointer group" onclick="openRegistration('${ev._id}', '${ev.title}')">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="bg-blue-500/10 text-blue-400 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-tighter">${ev.category || 'General'}</span>
-                            <span class="text-gray-600 font-mono text-[10px]">${new Date(ev.date).toLocaleDateString()}</span>
+                    <div class="luxury-card p-8 rounded-[2rem] group cursor-pointer" onclick="openRegistration('${ev._id}', '${ev.title}')">
+                        <div class="flex justify-between mb-6">
+                            <span class="text-[10px] font-bold gold-text uppercase tracking-widest">${ev.category || 'EXECUTIVE'}</span>
+                            <span class="text-gray-500 text-[10px] font-mono">${new Date(ev.date).toLocaleDateString()}</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">${ev.title}</h3>
-                        <p class="text-gray-400 text-sm mt-3 line-clamp-2">${ev.description}</p>
-                        <div class="mt-8 flex items-center text-xs font-bold text-blue-500">
-                            REGISTER NOW →
+                        <h3 class="text-xl font-bold mb-4 group-hover:text-[#d4af37] transition-colors">${ev.title}</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed mb-6 line-clamp-2">${ev.description || 'Join us for this premium event.'}</p>
+                        <div class="flex items-center gap-2 text-[10px] font-bold gold-text">
+                            REGISTER NOW <span class="group-hover:translate-x-2 transition-transform">→</span>
                         </div>
                     </div>
                 `).join('');
             } catch (e) {
-                document.getElementById('eventGrid').innerHTML = "<p class='text-red-400'>Error connecting to backend.</p>";
+                grid.innerHTML = `<p class="text-red-400">Server unreachable. Ensure 'node server.js' is running.</p>`;
             }
         }
 
@@ -94,61 +147,76 @@
             selectedEventId = id;
             document.getElementById('selectedEventTitle').innerText = title;
             document.getElementById('registrationArea').classList.remove('hidden');
-            document.getElementById('registrationArea').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function closeReg() {
-            document.getElementById('registrationArea').classList.add('hidden');
         }
 
         async function submitRegistration() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('userEmail').value;
-
-            if (!email || !name) return Swal.fire('Wait!', 'We need your name and email.', 'warning');
-
-            const res = await fetch(`${API}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ eventId: selectedEventId, userName: name, userEmail: email })
-            });
-
-            if (res.ok) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Spot Secured!',
-                    text: 'Check your email for details.',
-                    background: '#080a0f',
-                    color: '#fff'
+            
+            if (!email || !name) {
+                return Swal.fire({
+                    title: 'Incomplete',
+                    text: 'Please enter your email at the top and your name here.',
+                    icon: 'warning',
+                    background: '#062c26',
+                    color: '#fff',
+                    confirmButtonColor: '#d4af37'
                 });
-                closeReg();
+            }
+
+            try {
+                const res = await fetch(`${API}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ eventId: selectedEventId, userName: name, userEmail: email })
+                });
+
+                if (res.ok) {
+                    Swal.fire({ 
+                        icon: 'success', 
+                        title: 'Seat Reserved', 
+                        background: '#062c26', 
+                        color: '#fff', 
+                        confirmButtonColor: '#d4af37' 
+                    });
+                    document.getElementById('registrationArea').classList.add('hidden');
+                    document.getElementById('regName').value = '';
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Registration failed.', 'error');
             }
         }
 
         async function viewMyEvents() {
             const email = document.getElementById('userEmail').value;
-            if (!email) return Swal.fire('Email Needed', 'Enter your email in the search bar first.', 'info');
+            if (!email) return Swal.fire('Email Required', 'Enter your email in the search bar first.', 'info');
 
-            const res = await fetch(`${API}/my-registrations/${email}`);
-            const data = await res.json();
-            
-            const html = data.map(r => `
-                <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl mb-2">
-                    <div>
-                        <p class="font-bold text-white">${r.eventId.title}</p>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">${new Date(r.eventId.date).toDateString()}</p>
-                    </div>
-                    <span class="text-green-500 text-[10px] font-bold">● CONFIRMED</span>
-                </div>
-            `).join('') || '<p class="text-gray-500">No events found for this email.</p>';
+            try {
+                const res = await fetch(`${API}/my-registrations/${email}`);
+                const data = await res.json();
+                
+                const list = data.map(r => {
+                    if (!r.eventId) return ''; 
+                    return `
+                    <div class="flex justify-between items-center p-4 border-b border-white/5">
+                        <div class="text-left">
+                            <p class="font-bold gold-text">${r.eventId.title}</p>
+                            <p class="text-[9px] text-gray-500">${new Date(r.eventId.date).toDateString()}</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-emerald-400">CONFIRMED</span>
+                    </div>`;
+                }).join('');
 
-            Swal.fire({
-                title: 'Your Schedule',
-                html: `<div class="mt-4">${html}</div>`,
-                background: '#080a0f',
-                color: '#fff',
-                confirmButtonColor: '#2563eb'
-            });
+                Swal.fire({ 
+                    title: 'My Bookings', 
+                    html: `<div class="max-h-60 overflow-y-auto">${list || 'No bookings found.'}</div>`, 
+                    background: '#062c26', 
+                    color: '#fff', 
+                    confirmButtonColor: '#d4af37' 
+                });
+            } catch (err) {
+                Swal.fire('Error', 'Could not fetch bookings.', 'error');
+            }
         }
 
         loadEvents();
