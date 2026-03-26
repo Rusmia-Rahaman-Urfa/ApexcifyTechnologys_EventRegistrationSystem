@@ -7,16 +7,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect using your .env variable - Exactly like Task-1
+// Your hard-earned Cloud MongoDB Connection
 const mongoURI = process.env.MONGO_URI; 
 
 mongoose.connect(mongoURI)
-    .then(() => console.log("🚀 Task-2: Cloud MongoDB Connected!"))
+    .then(() => console.log("🚀 EventHub Backend: Cloud MongoDB Connected!"))
     .catch(err => console.error("❌ Connection Error:", err));
 
 // --- MODELS ---
 
-// Event Model (Matches your Atlas 'events' collection)
 const Event = mongoose.model('Event', new mongoose.Schema({
     title: String,
     date: Date, 
@@ -24,16 +23,27 @@ const Event = mongoose.model('Event', new mongoose.Schema({
     category: String 
 }), 'events'); 
 
-// Registration Model (Matches your Atlas 'registrations' collection)
 const Registration = mongoose.model('Registration', new mongoose.Schema({
     eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
     userName: String,
-    userEmail: String
+    userEmail: String,
+    userPhone: String,    // New
+    organization: String, // New
 }), 'registrations');
 
-// --- API ENDPOINTS ---
+// --- AUTH & USER API ---
 
-// 1. Get all events
+// Simple Login Check
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    // For this task, we'll allow any email, but check for a specific password
+    if (password === "admin123" || password === "user123") {
+        res.json({ success: true, message: "Login successful" });
+    } else {
+        res.status(401).json({ success: false, message: "Invalid Password" });
+    }
+});
+
 app.get('/api/events', async (req, res) => {
     try {
         const events = await Event.find().sort({ date: 1 });
@@ -41,7 +51,6 @@ app.get('/api/events', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
-// 2. Register for an event
 app.post('/api/register', async (req, res) => {
     try {
         const newReg = new Registration(req.body);
@@ -50,7 +59,6 @@ app.post('/api/register', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
-// 3. Get my registrations by email
 app.get('/api/my-registrations/:email', async (req, res) => {
     try {
         const regs = await Registration.find({ userEmail: req.params.email }).populate('eventId');
@@ -58,17 +66,22 @@ app.get('/api/my-registrations/:email', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
-// 4. Seed Route (To add data to your new database easily)
-app.get('/api/seed', async (req, res) => {
+// --- ADMIN API ---
+
+app.post('/api/admin/add-event', async (req, res) => {
     try {
-        const sample = [
-            { title: "MERN Masterclass", date: new Date('2026-05-10'), description: "Learn full-stack.", category: "Workshop" },
-            { title: "AI Seminar", date: new Date('2026-06-15'), description: "Future of GPT.", category: "Seminar" }
-        ];
-        await Event.insertMany(sample);
-        res.send("Data added successfully!");
-    } catch (err) { res.status(500).send(err.message); }
+        const newEvent = new Event(req.body);
+        await newEvent.save();
+        res.json({ message: "Event created!" });
+    } catch (err) { res.status(500).send(err); }
+});
+
+app.get('/api/admin/registrations', async (req, res) => {
+    try {
+        const allRegs = await Registration.find().populate('eventId');
+        res.json(allRegs);
+    } catch (err) { res.status(500).send(err); }
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Task-2 Backend running on port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));
