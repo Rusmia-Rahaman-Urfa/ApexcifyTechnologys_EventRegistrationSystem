@@ -11,32 +11,33 @@ app.use(express.json());
 const mongoURI = process.env.MONGO_URI; 
 
 mongoose.connect(mongoURI)
-    .then(() => console.log("🚀 EventHub Backend: Cloud MongoDB Connected!"))
+    .then(() => console.log("🚀 Task-2: Cloud MongoDB Connected!"))
     .catch(err => console.error("❌ Connection Error:", err));
 
 // --- MODELS ---
 
+// Event Model
 const Event = mongoose.model('Event', new mongoose.Schema({
     title: String,
-    date: Date, 
+    date: { type: Date, default: Date.now }, 
     description: String,
     category: String 
 }), 'events'); 
 
+// Registration Model
 const Registration = mongoose.model('Registration', new mongoose.Schema({
     eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
     userName: String,
     userEmail: String,
-    userPhone: String,    // New
-    organization: String, // New
+    userPhone: String,
+    organization: String,
 }), 'registrations');
 
-// --- AUTH & USER API ---
+// --- API ENDPOINTS ---
 
 // Simple Login Check
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
-    // For this task, we'll allow any email, but check for a specific password
     if (password === "admin123" || password === "user123") {
         res.json({ success: true, message: "Login successful" });
     } else {
@@ -44,6 +45,7 @@ app.post('/api/login', (req, res) => {
     }
 });
 
+// 1. Get all events
 app.get('/api/events', async (req, res) => {
     try {
         const events = await Event.find().sort({ date: 1 });
@@ -51,14 +53,16 @@ app.get('/api/events', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
+// 2. Register for an event
 app.post('/api/register', async (req, res) => {
     try {
         const newReg = new Registration(req.body);
         await newReg.save();
-        res.json({ message: "Registration successful!" });
+        res.json({ success: true, message: "Registration successful!" });
     } catch (err) { res.status(500).send(err); }
 });
 
+// 3. Get my registrations by email
 app.get('/api/my-registrations/:email', async (req, res) => {
     try {
         const regs = await Registration.find({ userEmail: req.params.email }).populate('eventId');
@@ -66,8 +70,21 @@ app.get('/api/my-registrations/:email', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
+// 4. Seed Route (To add sample data easily)
+app.get('/api/seed', async (req, res) => {
+    try {
+        const sample = [
+            { title: "MERN Masterclass", date: new Date('2026-05-10'), description: "Learn full-stack engineering with MongoDB, Express, React, and Node.", category: "Workshop" },
+            { title: "AI Seminar", date: new Date('2026-06-15'), description: "Exploring the future of GPT and Large Language Models.", category: "Seminar" }
+        ];
+        await Event.insertMany(sample);
+        res.send("Sample data added successfully!");
+    } catch (err) { res.status(500).send(err.message); }
+});
+
 // --- ADMIN API ---
 
+// Create Event
 app.post('/api/admin/add-event', async (req, res) => {
     try {
         const newEvent = new Event(req.body);
@@ -76,6 +93,7 @@ app.post('/api/admin/add-event', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
+// View all registrations (Admin only view)
 app.get('/api/admin/registrations', async (req, res) => {
     try {
         const allRegs = await Registration.find().populate('eventId');
@@ -83,5 +101,20 @@ app.get('/api/admin/registrations', async (req, res) => {
     } catch (err) { res.status(500).send(err); }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));
+// DELETE an event (Admin Only)
+app.delete('/api/admin/delete-event/:id', async (req, res) => {
+    try {
+        const result = await Event.findByIdAndDelete(req.params.id);
+        if (result) {
+            // Optional: Also delete all registrations associated with this event
+            await Registration.deleteMany({ eventId: req.params.id });
+            return res.json({ success: true, message: "Event and registrations deleted" });
+        }
+        res.status(404).json({ success: false, message: "Event not found" });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`✅ Task-2 Backend running on port ${PORT}`));
