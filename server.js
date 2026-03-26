@@ -7,7 +7,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Your hard-earned Cloud MongoDB Connection
 const mongoURI = process.env.MONGO_URI; 
 
 mongoose.connect(mongoURI)
@@ -106,7 +105,6 @@ app.delete('/api/admin/delete-event/:id', async (req, res) => {
     try {
         const result = await Event.findByIdAndDelete(req.params.id);
         if (result) {
-            // Optional: Also delete all registrations associated with this event
             await Registration.deleteMany({ eventId: req.params.id });
             return res.json({ success: true, message: "Event and registrations deleted" });
         }
